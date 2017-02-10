@@ -43,8 +43,11 @@ def get_page_mp4(url):
             videohtml = getHTML(x)
             reg_url = r'<source src="(https://www.tumblr.com/video_file/t:.*?)" type="video/mp4">'
             videore = re.compile(reg_url)
-            videourl = re.findall(videore, videohtml)[0]
-            list_url.append(downurl+videourl[72:96]+'.mp4')
+            temp = re.findall(videore, videohtml)
+            
+            if len(temp)!=0:
+                videourl = temp[0]
+                list_url.append(downurl+videourl[72:96]+'.mp4')
     # print(list_url)
     return list_url
 
@@ -68,12 +71,12 @@ def post_pccloud(post_url):
 
     response = requests.request("POST", url, data=payload, headers=headers, params=querystring)
     text = json.loads(response.text)
-    print(text)
-    # if text['result']==0:
-    #     try:
-    #         print('上传文件成功：',text['metadata'][0]['name'])
-    #     except Exception as e:
-    #         raise e
+    
+    if text['result']==0:
+        try:
+            print('上传文件成功：',post_url)
+        except:
+            print('上传文件失败：',post_url)
 
 # 
 
@@ -87,19 +90,31 @@ def main():
     #         templist.append(temp)
     #     else:
     #         break
-    mylist = []
-    for x in templist:
-        for y in x:
-            mylist.append(y+'page/')
+    # mylist = []
+    # for x in templist:
+    #     for y in x:
+    #         mylist.append(y+'page/')
     
-    temp_mp4 = []
-    for x in mylist:
-        for y in range(1,10):
-            temp = get_page_mp4(x+str(y))
-            if len(temp) !=0 :
-                for z in temp:
-                    # time.sleep(2)
-                    post_pccloud(z)
+    # temp_mp4 = []
+    
+    # for x in mylist:
+    #     for y in range(1,10):
+    #         temp = get_page_mp4(x+str(y))
+    #         if len(temp) !=0 :
+    #             f=open('download.txt','a')
+    #             for z in temp:
+    #                 print(z)
+    #                 f.write(z+'\n')
+    #                 temp_mp4.append(z)
+    #             f.close()
+
+    with open('download.txt','r') as f:
+        for line in f.readlines():
+            post_pccloud(line.strip())
+
+
+    
+    
 
 
 if __name__ == '__main__':
@@ -112,6 +127,10 @@ if __name__ == '__main__':
 
 # aa= {'result': 0, 'metadata': [{'height': 270, 'path': '/tumblr_o1y4kxhhOS1ta42xh.mp4', 'created': 'Thu, 09 Feb 2017 03:27:34 +0000', 'width': 480, 'category': 2, 'contenttype': 'video/mp4', 'ismine': True, 'audiosamplerate': 22050, 'audiobitrate': 126, 'modified': 'Thu, 09 Feb 2017 03:42:46 +0000', 'comments': 0, 'fps': '30.00', 'videocodec': 'h264', 'hash': 9237915073383151591, 'fileid': 2155791500, 'parentfolderid': 0, 'icon': 'video', 'duration': '298.40', 'id': 'f2155791500', 'videobitrate': 1353, 'isshared': False, 'isfolder': False, 'rotate': 0, 'thumb': True, 'size': 55391743, 'audiocodec': 'aac', 'name': 'tumblr_o1y4kxhhOS1ta42xh.mp4'}]}
 
-# bb={'result': 0, 'metadata': []}
+# # bb={'result': 0, 'metadata': []}
+# f=open('download.txt','a')
+# f.write('https://mugoujiayi.tumblr.com/'+'\n')
+# f.close()
+
 
 
